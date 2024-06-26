@@ -2,8 +2,8 @@
   {
     "id": 1,
     "name": "テニス部",
-    "status": true,
-    "student": "user1"
+    "status": false,
+    "student": ""
   },
   {
     "id": 2,

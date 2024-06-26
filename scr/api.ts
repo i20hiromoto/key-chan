@@ -38,14 +38,6 @@ try {
 // Expressのミドルウェアの設定
 app.use(cors());
 app.use(express.json());
-// app.use(cookieParser());
-// app.use(session({
-//   secret: 'Souzouensyuu', // セッションIDの署名に使用する秘密鍵
-//   resave: false,
-//   saveUninitialized: true,
-//   cookie: { secure: false}
-//   } // HTTPSを使用する場合はtrueに設定
-// ));
 
 // ログインAPIの実装
 app.post('/login', (req: Request, res: Response) => {
