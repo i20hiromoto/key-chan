@@ -16,6 +16,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../../Keychan_app/keychan_app/components/ui/scroll-area.tsx"],
   "exclude": ["node_modules"]
 }

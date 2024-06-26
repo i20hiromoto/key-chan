@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "テニス部",
+    "status": true,
+    "student": "user1"
+  },
+  {
+    "id": 2,
+    "name": "ソフトテニス部",
+    "status": false,
+    "student": ""
+  },
+  {
+    "id": 3,
+    "name": "卓球部",
+    "status": false,
+    "student": ""
+  },
+  {
+    "id": 4,
+    "name": "陸上部",
+    "status": false,
+    "student": ""
+  },
+  {
+    "id": 5,
+    "name": "野球部",
+    "status": false,
+    "student": ""
+  },
+  {
+    "id": 6,
+    "name": "第一体育館",
+    "status": false,
+    "student": ""
+  },
+  {
+    "id": 7,
+    "name": "第二体育館",
+    "status": false,
+    "student": ""
+  },
+  {
+    "id": 8,
+    "name": "メディアホール",
+    "status": false,
+    "student": ""
+  }
+]
