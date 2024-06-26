@@ -1,11 +1,11 @@
-import * as express from 'express';
+import express from 'express';
 import { Request, Response } from 'express';
 import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
+import cors from 'cors';
 
 const app = express();
 const port = 3001;
