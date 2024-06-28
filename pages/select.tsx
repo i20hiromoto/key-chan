@@ -44,6 +44,7 @@ const Select: React.FC = () => {
                 'Content-Type': 'application/json'
               }
             });
+        router.push('/select');
     }catch(error){
         alert('An error occurred during login. Please try again.');
     } 
