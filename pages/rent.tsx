@@ -82,7 +82,7 @@ const Rent: React.FC = () => {
     }
     
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', justifyContent: 'flex-start', paddingTop: '50px' }}>
             <form onSubmit={submit}>
             <Card className="w-[600px]">
             <h1>Rent Menu</h1>
