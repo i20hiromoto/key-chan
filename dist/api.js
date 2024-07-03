@@ -24,14 +24,6 @@ catch (err) {
 // Expressのミドルウェアの設定
 app.use(cors());
 app.use(express.json());
-// app.use(cookieParser());
-// app.use(session({
-//   secret: 'Souzouensyuu', // セッションIDの署名に使用する秘密鍵
-//   resave: false,
-//   saveUninitialized: true,
-//   cookie: { secure: false}
-//   } // HTTPSを使用する場合はtrueに設定
-// ));
 // ログインAPIの実装
 app.post('/login', function (req, res) {
     var _a = req.body, username = _a.username, password = _a.password;
@@ -42,6 +34,25 @@ app.post('/login', function (req, res) {
     }
     if (!user) {
         return res.status(401).json({ message: 'Invalid username, student number, or password' });
+    }
+});
+app.post('/signup', function (req, res) {
+    var _a = req.body, username = _a.username, s_number = _a.s_number, password = _a.password;
+    // ユーザーを検索
+    var user = userData.find(function (user) { return user.username === username; });
+    if (user) {
+        return res.status(401).json({ message: 'User already exists' });
+    }
+    else {
+        var newUser = { username: username, s_number: s_number, password: password };
+        userData.push(newUser);
+        fs.writeFile(userDataFilePath, JSON.stringify(userData, null, 2), function (err) {
+            if (err) {
+                console.error('Error writing JSON file:', err);
+                return res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+        res.json({ message: 'User created successfully', user: newUser });
     }
 });
 app.post('/api/rent/room', function (req, res) {
@@ -115,24 +126,6 @@ app.get('/api/get/all', function (req, res) {
         console.error('An error occurred:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
-});
-// 認証ミドルウェアの実装
-var isAuthenticated = function (req, res, next) {
-    // セッションからユーザー情報を取得
-    var user = req.session.user;
-    if (user) {
-        // リクエストオブジェクトにユーザー情報をセット
-        req.user = user;
-        next(); // 認証された場合は次のミドルウェアに進む
-    }
-    else {
-        res.status(401).json({ message: 'Unauthorized' });
-    }
-};
-// 認証が必要なAPIエンドポイントの例（プロフィール取得）
-app.get('/profile', isAuthenticated, function (req, res) {
-    // req.userを使用して認証されたユーザーのプロフィールを返す
-    res.json({ id: req.user.id, username: req.user.username });
 });
 // サーバーの起動
 app.listen(port, function () {

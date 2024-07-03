@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { Button } from "@/components/ui/button"
+import Account from './account';
 import React, { useEffect, useState } from 'react';
 import {
     Card,
@@ -34,6 +35,13 @@ interface DataItem {
 
 const Select: React.FC = () => {
     const router = useRouter();
+    useEffect(() => {
+        const user = sessionStorage.getItem('user');
+        if (!user) {
+          alert('Please login first');
+          router.push('/');
+        }
+      }, [router]);
     const rent = () => {
         router.push('/rent'); // 別のページに遷移
     }
@@ -99,10 +107,8 @@ const Select: React.FC = () => {
                 </TableBody>
             </Table>
             </CardContent>
-            <CardFooter className="flex justify-center">
-                <Button onClick={logout}>Logout</Button>
-            </CardFooter>
         </Card>
+        <Account />
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import { Sidemenu } from "@/components/ui/side_menu";
 import React, { useEffect, useState, ChangeEvent } from 'react';
+import Account from './account';
 import fetchData from '../scr/fetchData';
 import { Button } from "@/components/ui/button"
 import {
@@ -30,6 +31,11 @@ const Rent: React.FC = () => {
     const [sessionData, setSessionData] = useState<string | null>(null);
 
     useEffect(() => {
+        const user = sessionStorage.getItem('user');
+    if (!user) {
+      alert('Please login first');
+      router.push('/');
+    }
         const fetchDataAndSetData = async () => {
             const fetchedData = await fetchData();
             setData(fetchedData);
@@ -102,6 +108,7 @@ const Rent: React.FC = () => {
             </CardContent>
             </Card>
             </form>
+            <Account />
         </div>
     );
 };

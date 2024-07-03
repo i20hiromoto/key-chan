@@ -1,11 +1,11 @@
-import express from 'express';
+import * as express from 'express';
 import { Request, Response } from 'express';
 import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
-import cors from 'cors';
+import * as cors from 'cors';
 
 const app = express();
 const port = 3001;
@@ -13,7 +13,7 @@ const port = 3001;
 app.use(bodyParser.json());
 declare module 'express-session' {
   interface SessionData {
-    user:{id: number;
+    user:{
           username: string;
           s_number: number;
           password: string;
@@ -24,7 +24,7 @@ declare module 'express-session' {
 // JSONファイルからユーザーデータを読み込む
 const userDataFilePath = "data/userdata.json";
 const roomDataFilePath = "data/roomdata.json"; 
-let userData: { id: number; username: string; s_number: number; password: string }[] = [];
+let userData: {  username: string; s_number: number; password: string }[] = [];
 let roomData: { id: number; name: string; status: boolean; student: string }[] = [];
 try {
   const userDataJson = fs.readFileSync(userDataFilePath, 'utf-8');
@@ -55,15 +55,27 @@ app.post('/login', (req: Request, res: Response) => {
 
 });
 
-// ログアウトAPIの実装
-// app.post('/logout', (req: Request, res: Response) => {
-//   req.session.destroy(err => {
-//     if (err) {
-//       return res.status(500).json({ message: 'Logout failed' });
-//     }
-//     res.json({ message: 'Logout successful' });
-//   });
-// });
+app.post('/signup', (req: Request, res: Response) => {
+  const { username,s_number,password } = req.body;
+
+  // ユーザーを検索
+  const user = userData.find(user => user.username === username);
+
+  if(user){
+    return res.status(401).json({ message: 'User already exists' });
+  }else{
+    const newUser = { username, s_number, password };
+    userData.push(newUser);
+    fs.writeFile(userDataFilePath, JSON.stringify(userData, null, 2), err => {
+      if (err) {
+        console.error('Error writing JSON file:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
+    });
+    res.json({ message: 'User created successfully', user: newUser });
+  }
+
+});
 
 interface RoomData {
   id: number;
@@ -157,25 +169,7 @@ app.get('/api/get/all', (req: Request, res: Response) => {
   }
 });
 
-// 認証ミドルウェアの実装
-const isAuthenticated = (req: Request, res: Response, next: () => void) => {
-  // セッションからユーザー情報を取得
-  const user = req.session.user as { id: number; username: string; s_number: number } | undefined;
 
-  if (user) {
-    // リクエストオブジェクトにユーザー情報をセット
-    (req as any).user = user;
-    next(); // 認証された場合は次のミドルウェアに進む
-  } else {
-    res.status(401).json({ message: 'Unauthorized' });
-  }
-};
-
-// 認証が必要なAPIエンドポイントの例（プロフィール取得）
-app.get('/profile', isAuthenticated, (req: Request, res: Response) => {
-  // req.userを使用して認証されたユーザーのプロフィールを返す
-  res.json({ id: (req as any).user.id, username: (req as any).user.username });
-});
 
 // サーバーの起動
 app.listen(port, () => {
