@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import Title from './title';
 import { CardFooter } from '@/components/ui/card';
 
 interface User {
@@ -44,9 +45,12 @@ const LoginPage: React.FC = () => {
   }
   
   return (
-    <div className="flex justify-center">
-      <form onSubmit={handleLogin}>
-        <div className="grid w-full items-center gap-4">
+    <div className="flex justify-center items-center h-screen">
+      <form onSubmit={handleLogin} className="w-full max-w-md mt-4">
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <Label style={{fontSize: '20px'}}></Label>
+          </div>
           <div className="flex flex-col space-y-1.5">
             <Label htmlFor="username">UserName</Label>
             <Input id="username" placeholder="your ID" type="text" value={username} onChange={e => setUsername(e.target.value)} />
@@ -56,13 +60,17 @@ const LoginPage: React.FC = () => {
             <Input id="password" placeholder="your password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
         </div>
-        <CardFooter className="flex justify-between">
-          <Button type="submit">Login</Button>
-          <Button type="button" onClick={signUp}>Sign up</Button>
-        </CardFooter>
+        <div className="mt-4">
+          <CardFooter className="flex justify-between">
+            <Button type="submit" className="w-[100px]">Login</Button>
+            <Button type="button" className="w-[100px]" onClick={signUp}>Sign up</Button>
+          </CardFooter>
+        </div>
       </form>
+      <Title/>
     </div>
-  )
+  );
+  
 }
 
 export default LoginPage;

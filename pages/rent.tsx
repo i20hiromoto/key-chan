@@ -1,6 +1,7 @@
 import { Sidemenu } from "@/components/ui/side_menu";
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import Account from './account';
+import Title from './title';
 import fetchData from '../scr/fetchData';
 import { Button } from "@/components/ui/button"
 import {
@@ -15,6 +16,15 @@ import {
 import { Card,CardContent } from "@/components/ui/card";
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 interface DataItem {
     id: number;
     name: string;
@@ -47,6 +57,7 @@ const Rent: React.FC = () => {
             setSessionData(userSessionData);
         }
     }, []);
+
     const roomdata = {
         name: selectedRoom,
         student: sessionData
@@ -65,30 +76,15 @@ const Rent: React.FC = () => {
             alert('An error occurred during login. Please try again.');
         }
     }
-
-    // const rentKey = async () => {
-
-    //     try {
-    //         const response = await axios.put('/data/${id}', newData);
-    //         if (response.status === 200) {
-    //           console.log('Data updated successfully');
-    //         } else {
-    //           console.error('Failed to update data');
-    //         }
-    //       } catch (error) {
-    //         console.error('Error:', error);
-    //       }
-    //     };
-    // };
     
     return (
-        <div className="flex justify-center align-center">
+        <div className="flex justify-center items-center h-screen">
             <form onSubmit={submit}>
             <Card className="w-[600px]">
             <h1>Rent Menu</h1>
             <CardContent>
             <Select onValueChange={(value: string) => setSelectedRoom(value)}>
-                <SelectTrigger className="w-[180px]" id="selectroom">
+                <SelectTrigger className="w-[250px]" id="selectroom">
                     <SelectValue placeholder="Select room" />
                 </SelectTrigger>
                 <SelectContent>
@@ -109,6 +105,7 @@ const Rent: React.FC = () => {
             </Card>
             </form>
             <Account />
+            <Title />
         </div>
     );
 };

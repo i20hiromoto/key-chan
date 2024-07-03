@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { CardFooter } from '@/components/ui/card';
 import { response } from 'express';
+import Title from './title';
 
 interface User {
   username: string;
@@ -47,28 +48,32 @@ const LoginPage: React.FC = () => {
     }
 
   return (
-    <div className="flex justify-center">
-      <form onSubmit={handleLogin}>
-        <div className="grid w-full items-center gap-4">
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="username">UserName</Label>
-            <Input id="username" placeholder="your ID" type="text" value={username} onChange={e => setUsername(e.target.value)} />
-          </div>
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="s_number">StudentNumber</Label>
-            <Input id="s_number" placeholder="your student number" type="text" value={s_number} onChange={e => setStudentNumber(e.target.value)} />
-          </div>
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" placeholder="your password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-          </div>
-        </div>
-        <CardFooter className="flex justify-between">
-          <Button type="submit">Submit</Button>
-          <Button onClick={back} type="button">Back</Button>
-        </CardFooter>
-      </form>
+    <div className="flex justify-center items-center h-screen">
+  <form onSubmit={handleLogin} className="w-full max-w-md">
+    <div className="grid grid-cols-1 gap-4">
+      <div className="flex flex-col space-y-1.5 w-[600px]">
+        <Label htmlFor="username">UserName</Label>
+        <Input id="username" placeholder="your ID" type="text" value={username} onChange={e => setUsername(e.target.value)} />
+      </div>
+      <div className="flex flex-col space-y-1.5">
+        <Label htmlFor="s_number">StudentNumber</Label>
+        <Input id="s_number" placeholder="your student number" type="text" value={s_number} onChange={e => setStudentNumber(e.target.value)} />
+      </div>
+      <div className="flex flex-col space-y-1.5">
+        <Label htmlFor="password">Password</Label>
+        <Input id="password" placeholder="your password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+      </div>
     </div>
+    <div className="mt-4">
+      <CardFooter className="flex justify-between">
+        <Button type="submit" className='w-[100px]'>Submit</Button>
+        <Button onClick={back} type="button" className='w-[100px]'>Back</Button>
+      </CardFooter>
+    </div>
+  </form>
+  <Title/>
+</div>
+
   );
 }
 

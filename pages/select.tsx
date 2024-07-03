@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { Button } from "@/components/ui/button"
 import Account from './account';
+import Title from './title';
 import React, { useEffect, useState } from 'react';
 import {
     Card,
@@ -109,6 +110,7 @@ const Select: React.FC = () => {
             </CardContent>
         </Card>
         <Account />
+        <Title/>
         </div>
     )
 }
