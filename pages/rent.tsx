@@ -13,7 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-import { Card,CardContent } from "@/components/ui/card";
+import { Card,CardContent,CardFooter } from "@/components/ui/card";
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import {
@@ -76,6 +76,10 @@ const Rent: React.FC = () => {
             alert('An error occurred during login. Please try again.');
         }
     }
+
+    const back = () => {
+        router.push('/select');
+    }
     
     return (
         <div className="flex justify-center items-center h-screen">
@@ -99,9 +103,10 @@ const Rent: React.FC = () => {
                 </SelectContent>
             </Select>
             </CardContent>
-            <CardContent>
-                <Button type="submit">借りる</Button> 
-            </CardContent>
+            <CardFooter className="gap-4">
+                <Button type="submit" className="w-[100px]">Submit</Button>
+                <Button type="button" onClick={back} className="w-[100px]">Back</Button>
+            </CardFooter>
             </Card>
             </form>
             <Account />
