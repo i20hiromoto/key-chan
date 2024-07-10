@@ -54,7 +54,7 @@ const Account: React.FC = () => {
             {user ? (
               <>
                 <DropdownMenuItem>Username: {user.username}</DropdownMenuItem>
-                <DropdownMenuItem>Student Number: {user.s_number}</DropdownMenuItem>
+                <DropdownMenuItem>Student Number: {user.password}</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
               </>

@@ -4,12 +4,14 @@ var express = require("express");
 var fs = require("fs");
 var bodyParser = require("body-parser");
 var cors = require("cors");
+var python_shell_1 = require("python-shell");
 var app = express();
 var port = 3001;
 app.use(bodyParser.json());
 // JSONファイルからユーザーデータを読み込む
 var userDataFilePath = "data/userdata.json";
 var roomDataFilePath = "data/roomdata.json";
+var scriptPath = "python/getcard.py";
 var userData = [];
 var roomData = [];
 try {
@@ -37,14 +39,15 @@ app.post('/login', function (req, res) {
     }
 });
 app.post('/signup', function (req, res) {
-    var _a = req.body, username = _a.username, s_number = _a.s_number, password = _a.password;
+    var _a = req.body, username = _a.username, password = _a.password;
     // ユーザーを検索
     var user = userData.find(function (user) { return user.username === username; });
-    if (user) {
-        return res.status(401).json({ message: 'User already exists' });
+    var pass = userData.find(function (user) { return user.password === password; });
+    if (user || pass) {
+        return res.status(401).json({ message: 'Username or Student Number already exists' });
     }
     else {
-        var newUser = { username: username, s_number: s_number, password: password };
+        var newUser = { username: username, password: password };
         userData.push(newUser);
         fs.writeFile(userDataFilePath, JSON.stringify(userData, null, 2), function (err) {
             if (err) {
@@ -54,6 +57,17 @@ app.post('/signup', function (req, res) {
         });
         res.json({ message: 'User created successfully', user: newUser });
     }
+});
+app.get('/api/callpy', function (req, res) {
+    var callPythonScript = function (scriptPath) {
+        python_shell_1.PythonShell.run(scriptPath, undefined).then(function (messages) {
+            res.json({ message: 'Python script executed successfully', output: messages });
+        }).catch(function (error) {
+            console.error('Error executing Python script:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        });
+    };
+    callPythonScript(scriptPath);
 });
 app.post('/api/rent/room', function (req, res) {
     var rm = roomData.find(function (rm) { return rm.name === req.body.name; });

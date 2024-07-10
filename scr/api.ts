@@ -6,6 +6,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import cors from 'cors';
+import Script from 'next/script';
+import { PythonShell } from 'python-shell';
 
 const app = express();
 const port = 3001;
@@ -15,17 +17,19 @@ declare module 'express-session' {
   interface SessionData {
     user:{
           username: string;
-          s_number: number;
-          password: string;
+          password: number;
         }
 }
 }
 
 // JSONファイルからユーザーデータを読み込む
 const userDataFilePath = "data/userdata.json";
-const roomDataFilePath = "data/roomdata.json"; 
-let userData: {  username: string; s_number: number; password: string }[] = [];
+const roomDataFilePath = "data/roomdata.json";
+const scriptPath = "python/getcard.py";
+
+let userData: {  username: string; password: number }[] = [];
 let roomData: { id: number; name: string; status: boolean; student: string }[] = [];
+
 try {
   const userDataJson = fs.readFileSync(userDataFilePath, 'utf-8');
   const roomDataJson = fs.readFileSync(roomDataFilePath, 'utf-8');
@@ -56,15 +60,16 @@ app.post('/login', (req: Request, res: Response) => {
 });
 
 app.post('/signup', (req: Request, res: Response) => {
-  const { username,s_number,password } = req.body;
+  const { username,password } = req.body;
 
   // ユーザーを検索
   const user = userData.find(user => user.username === username);
+  const pass = userData.find(user => user.password === password);
 
-  if(user){
-    return res.status(401).json({ message: 'User already exists' });
+  if(user||pass){
+    return res.status(401).json({ message: 'Username or Student Number already exists' });
   }else{
-    const newUser = { username, s_number, password };
+    const newUser = { username, password };
     userData.push(newUser);
     fs.writeFile(userDataFilePath, JSON.stringify(userData, null, 2), err => {
       if (err) {
@@ -84,11 +89,22 @@ interface RoomData {
   student: number;
 }
 interface StudentData {
-  id: number;
   username: string;
-  s_number: number;
   password: string;
 }
+
+app.get('/api/callpy', (req: Request, res: Response) => {
+  const callPythonScript = (scriptPath: string) => {
+    PythonShell.run(scriptPath, undefined).then(messages => {
+      res.json({ message: 'Python script executed successfully', output: messages });
+    }).catch(error => {
+      console.error('Error executing Python script:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    });
+  };
+
+  callPythonScript(scriptPath);
+});
 
 app.post('/api/rent/room', (req: Request, res: Response) => {
   const rm = roomData.find(rm => rm.name === req.body.name);
