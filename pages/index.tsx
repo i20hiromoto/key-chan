@@ -117,7 +117,7 @@ const LoginPage: React.FC = () => {
               <Label style={{fontSize: '20px'}}></Label>
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="username"> ユーザネーム（カタカナ）</Label>
+              <Label htmlFor="username"> 名前（カタカナ）</Label>
               <Input id="username" placeholder="your name" type="text" value={username} onChange={e => setUsername(hiraganaToKatakana(e.target.value))} />
             </div>
             <div className="flex flex-col space-y-1.5">
