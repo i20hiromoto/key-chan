@@ -17,6 +17,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -93,10 +107,10 @@ const RentDialog: React.FC<{
         </AlertDialogHeader>
         <form onSubmit={handleSubmit}>
           <Select onValueChange={(value: string) => setSelectedRoom(value)}>
-            <SelectTrigger className="w-[250px]" id="selectroom">
+            <SelectTrigger className="w-[200px] " id="selectroom">
               <SelectValue placeholder="部屋を選択" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="h-[300px]">
               <SelectGroup>
                 <SelectLabel>選択</SelectLabel>
                 {data.map((item) => (
