@@ -1,141 +1,123 @@
-import { useRouter } from "next/router";
-import { Button } from "@/components/ui/button";
-import Account from "./account";
-import Title from "./title";
-import Rent from "./rent";
-import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import axios from "axios";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
+  AlertDialogTrigger,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import fetchData from "../scr/fetchData";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DataItem {
   id: number;
   name: string;
   status: boolean;
   student: string;
+  // Add other properties here if needed
 }
 
-const Select: React.FC = () => {
-  const router = useRouter();
+const RentDialog: React.FC<{
+  item: DataItem[];
+  onSubmit: (selectedRoom: string, sessionData: string | null) => void;
+  onClose: () => void;
+}> = ({ item, onSubmit, onClose }) => {
   const [data, setData] = useState<DataItem[]>([]);
-  const [isClient, setIsClient] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<string>("");
+  const [sessionData, setSessionData] = useState<string | null>(
+    sessionStorage.getItem("user")
+  );
 
-  useEffect(() => {
-    const user = sessionStorage.getItem("user");
-    if (!user) {
-      alert("ログインしてください");
-      router.push("/");
-    } else {
-      setIsClient(true);
-    }
-  }, [router]);
-
-  const fetchData = async (): Promise<DataItem[]> => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      const response = await axios.get<DataItem[]>(
-        "http://localhost:3001/api/get/all"
+      const response = axios.post(
+        "http://localhost:3001/api/rent/room",
+        roomdata,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      return response.data;
     } catch (error) {
-      console.error("データの取得中にエラーが発生しました:", error);
-      return [];
+      console.error("An error occurred:", error);
+      alert("An error occurred during login. Please try again.");
     }
+    onSubmit(selectedRoom, sessionData);
+  };
+
+  const roomdata = {
+    name: selectedRoom,
+    student: sessionData,
   };
 
   useEffect(() => {
-    if (isClient) {
-      const fetchDataAndSetData = async () => {
-        const fetchedData = await fetchData();
-        setData(fetchedData);
-      };
-      fetchDataAndSetData();
-    }
-  }, [isClient]);
+    const user = sessionStorage.getItem("user");
+    const fetchDataAndSetData = async () => {
+      const fetchedData = await fetchData();
+      setData(fetchedData);
+    };
+    fetchDataAndSetData();
 
-  if (!isClient) {
-    return <div>読み込み中...</div>;
-  }
+    const userSessionData = sessionStorage.getItem("user");
+    if (userSessionData) {
+      setSessionData(userSessionData);
+    }
+  }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
-      <Card className="w-[600px] h-[500px]">
-        <CardHeader className="flex justify-between">
-          <Button onClick={() => setDialogOpen(true)}>借りる</Button>
-          <Button
-            onClick={async () => {
-              try {
-                await axios.post(
-                  "http://localhost:3001/api/back/room",
-                  { student: sessionStorage.getItem("user") },
-                  {
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  }
-                );
-                location.reload();
-              } catch (error) {
-                alert("エラーが発生しました。もう一度お試しください。");
-              }
-            }}
-          >
-            返す
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <ScrollArea className="h-80 w-500 rounded-md border">
-              <thead className="sticky top-0 bg-white z-10">
-                <TableHead className="w-[200px] sticky">部屋名</TableHead>
-                <TableHead>借り主</TableHead>
-              </thead>
-              <TableBody>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button>部屋を選択</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>部屋選択</AlertDialogTitle>
+          <AlertDialogDescription>
+            部屋を選択して決定をクリックしてください
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <form onSubmit={handleSubmit}>
+          <Select onValueChange={(value: string) => setSelectedRoom(value)}>
+            <SelectTrigger className="w-[250px]" id="selectroom">
+              <SelectValue placeholder="部屋を選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>選択</SelectLabel>
                 {data.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.student}</TableCell>
-                  </TableRow>
+                  <SelectItem key={item.id} value={item.name}>
+                    {item.name}
+                  </SelectItem>
                 ))}
-              </TableBody>
-            </ScrollArea>
-          </Table>
-        </CardContent>
-      </Card>
-      <Account />
-      <Title />
-      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <AlertDialogTrigger />
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>部屋を借りる</AlertDialogTitle>
-            <AlertDialogContent>
-              {/* RentForm コンポーネントを表示 */}
-              <Rent />
-            </AlertDialogContent>
-          </AlertDialogHeader>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <div className="flex gap-4 mt-4">
+            <AlertDialogAction type="submit" disabled={!selectedRoom}>
+              決定
+            </AlertDialogAction>
+            <AlertDialogCancel onClick={onClose}>キャンセル</AlertDialogCancel>
+          </div>
+        </form>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
-export default Select;
+export default RentDialog;

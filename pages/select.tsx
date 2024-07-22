@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import Account from "./account";
 import Title from "./title";
+import RentDialog from "./rentDialog";
 import React, { useEffect, useState } from "react";
 import {
   Card,
@@ -37,6 +38,7 @@ const Select: React.FC = () => {
   const router = useRouter();
   const [data, setData] = useState<DataItem[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
@@ -47,10 +49,6 @@ const Select: React.FC = () => {
       setIsClient(true);
     }
   }, [router]);
-
-  const rent = () => {
-    router.push("/rent"); // 別のページに遷移
-  };
 
   const back = async () => {
     try {
@@ -86,6 +84,13 @@ const Select: React.FC = () => {
     router.push("/");
   };
 
+  const handleSubmit = (selectedRoom: string, sessionData: string | null) => {
+    // Handle the form submission logic here
+    console.log(`Selected Room: ${selectedRoom}, Session Data: ${sessionData}`);
+    setIsDialogOpen(false); // Close the dialog after submission
+    location.reload();
+  };
+
   useEffect(() => {
     if (isClient) {
       const fetchDataAndSetData = async () => {
@@ -105,14 +110,18 @@ const Select: React.FC = () => {
     <div className="flex justify-center items-center h-screen">
       <Card className="w-[600px] h-[500px]">
         <CardHeader className="flex justify-between">
-          <Button onClick={rent}>借りる</Button>
+          <RentDialog
+            item={data}
+            onSubmit={handleSubmit}
+            onClose={() => setIsDialogOpen(false)}
+          />
           <Button onClick={back}>返す</Button>
         </CardHeader>
         <CardContent>
           <Table>
             <ScrollArea className="h-80 w-500 rounded-md border">
               <thead className="sticky top-0 bg-white z-10">
-                <TableHead className="w-[200px] sticky">部屋名</TableHead>
+                <TableHead>部屋名</TableHead>
                 <TableHead>借り主</TableHead>
               </thead>
               <TableCaption>Data from API</TableCaption>
@@ -130,6 +139,13 @@ const Select: React.FC = () => {
       </Card>
       <Account />
       <Title />
+      {isDialogOpen && (
+        <RentDialog
+          item={data}
+          onSubmit={handleSubmit}
+          onClose={() => setIsDialogOpen(false)}
+        />
+      )}
     </div>
   );
 };
