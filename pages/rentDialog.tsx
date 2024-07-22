@@ -93,6 +93,11 @@ const RentDialog: React.FC<{
     onSubmit(selectedRoom, sessionData);
   };
 
+  const handleSelect = (value: string) => {
+    setSelectedRoom(value);
+    console.log("Selected Room:", value);
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -106,21 +111,25 @@ const RentDialog: React.FC<{
           </AlertDialogDescription>
         </AlertDialogHeader>
         <form onSubmit={handleSubmit}>
-          <Select onValueChange={(value: string) => setSelectedRoom(value)}>
-            <SelectTrigger className="w-[200px] " id="selectroom">
-              <SelectValue placeholder="部屋を選択" />
-            </SelectTrigger>
-            <SelectContent className="h-[300px]">
-              <SelectGroup>
-                <SelectLabel>選択</SelectLabel>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="w-[200px]">部屋を選択</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="h-[300px]">
+              <DropdownMenuLabel>選択</DropdownMenuLabel>
+              <ScrollArea className="h-[300px]">
                 {data.map((item) => (
-                  <SelectItem key={item.id} value={item.name}>
+                  <DropdownMenuItem
+                    key={item.id}
+                    onSelect={() => handleSelect(item.name)}
+                  >
                     {item.name}
-                  </SelectItem>
+                  </DropdownMenuItem>
                 ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+              </ScrollArea>
+            </DropdownMenuContent>
+            {selectedRoom && <p>選択された部屋: {selectedRoom}</p>}
+          </DropdownMenu>
           <div className="flex gap-4 mt-4">
             <AlertDialogAction type="submit" disabled={!selectedRoom}>
               決定
