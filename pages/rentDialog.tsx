@@ -38,14 +38,32 @@ const RentDialog: React.FC<{
 }> = ({ item, onSubmit, onClose }) => {
   const [data, setData] = useState<DataItem[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string>("");
-  const [sessionData, setSessionData] = useState<string | null>(
-    sessionStorage.getItem("user")
-  );
+  const [sessionData, setSessionData] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    const fetchDataAndSetData = async () => {
+      const fetchedData = await fetchData();
+      setData(fetchedData);
+    };
+    fetchDataAndSetData();
+
+    if (typeof window !== "undefined") {
+      const userSessionData = sessionStorage.getItem("user");
+      if (userSessionData) {
+        setSessionData(userSessionData);
+      }
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const roomdata = {
+      name: selectedRoom,
+      student: sessionData,
+    };
+
     try {
-      const response = axios.post(
+      const response = await axios.post(
         "http://localhost:3001/api/rent/room",
         roomdata,
         {
@@ -60,25 +78,6 @@ const RentDialog: React.FC<{
     }
     onSubmit(selectedRoom, sessionData);
   };
-
-  const roomdata = {
-    name: selectedRoom,
-    student: sessionData,
-  };
-
-  useEffect(() => {
-    const user = sessionStorage.getItem("user");
-    const fetchDataAndSetData = async () => {
-      const fetchedData = await fetchData();
-      setData(fetchedData);
-    };
-    fetchDataAndSetData();
-
-    const userSessionData = sessionStorage.getItem("user");
-    if (userSessionData) {
-      setSessionData(userSessionData);
-    }
-  }, []);
 
   return (
     <AlertDialog>
