@@ -2,72 +2,52 @@ import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import Account from "./account";
 import Title from "./title";
+import Rent from "./rent";
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Table,
   TableBody,
-  TableCaption,
-  TableCell,
   TableHead,
-  TableHeader,
+  TableCell,
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
 import axios from "axios";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface DataItem {
   id: number;
   name: string;
   status: boolean;
   student: string;
-  // Add other properties here if needed
 }
 
 const Select: React.FC = () => {
   const router = useRouter();
   const [data, setData] = useState<DataItem[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
     if (!user) {
-      alert("Please login first");
+      alert("ログインしてください");
       router.push("/");
     } else {
       setIsClient(true);
     }
   }, [router]);
-
-  const rent = () => {
-    router.push("/rent"); // 別のページに遷移
-  };
-
-  const back = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3001/api/back/room",
-        { student: sessionStorage.getItem("user") },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      location.reload();
-    } catch (error) {
-      alert("An error occurred during login. Please try again.");
-    }
-  };
 
   const fetchData = async (): Promise<DataItem[]> => {
     try {
@@ -76,14 +56,9 @@ const Select: React.FC = () => {
       );
       return response.data;
     } catch (error) {
-      console.error("An error occurred while fetching data:", error);
+      console.error("データの取得中にエラーが発生しました:", error);
       return [];
     }
-  };
-
-  const logout = async () => {
-    sessionStorage.removeItem("user");
-    router.push("/");
   };
 
   useEffect(() => {
@@ -92,21 +67,39 @@ const Select: React.FC = () => {
         const fetchedData = await fetchData();
         setData(fetchedData);
       };
-
       fetchDataAndSetData();
     }
   }, [isClient]);
 
   if (!isClient) {
-    return <div>Loading...</div>; // クライアントサイドのレンダリングが完了するまでローディング表示
+    return <div>読み込み中...</div>;
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen">
       <Card className="w-[600px] h-[500px]">
         <CardHeader className="flex justify-between">
-          <Button onClick={rent}>借りる</Button>
-          <Button onClick={back}>返す</Button>
+          <Button onClick={() => setDialogOpen(true)}>借りる</Button>
+          <Button
+            onClick={async () => {
+              try {
+                await axios.post(
+                  "http://localhost:3001/api/back/room",
+                  { student: sessionStorage.getItem("user") },
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+                location.reload();
+              } catch (error) {
+                alert("エラーが発生しました。もう一度お試しください。");
+              }
+            }}
+          >
+            返す
+          </Button>
         </CardHeader>
         <CardContent>
           <Table>
@@ -115,7 +108,6 @@ const Select: React.FC = () => {
                 <TableHead className="w-[200px] sticky">部屋名</TableHead>
                 <TableHead>借り主</TableHead>
               </thead>
-              <TableCaption>Data from API</TableCaption>
               <TableBody>
                 {data.map((item) => (
                   <TableRow key={item.id}>
@@ -130,6 +122,18 @@ const Select: React.FC = () => {
       </Card>
       <Account />
       <Title />
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogTrigger />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>部屋を借りる</AlertDialogTitle>
+            <AlertDialogContent>
+              {/* RentForm コンポーネントを表示 */}
+              <Rent />
+            </AlertDialogContent>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

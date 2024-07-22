@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger as BaseDropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import styled from 'styled-components';
-import { Button } from "@/components/ui/button"
+import styled from "styled-components";
+import { Button } from "@/components/ui/button";
 
 interface User {
   username: string;
@@ -29,34 +29,38 @@ const Account: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const userData = sessionStorage.getItem('user');
+    const userData = sessionStorage.getItem("user");
     if (userData) {
       setUser(JSON.parse(userData));
     }
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('user');
+    sessionStorage.removeItem("user");
     setUser(null);
-    router.push('/'); // ログアウト後にログインページにリダイレクト
+    router.push("/"); // ログアウト後にログインページにリダイレクト
   };
 
   return (
     <div className="fixed top-0 right-0 m-4">
       <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" onClick={() => setIsOpen(!isOpen)}>My Account</Button>
-      </DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" onClick={() => setIsOpen(!isOpen)}>
+            ユーザーデータ
+          </Button>
+        </DropdownMenuTrigger>
         {isOpen && (
           <DropdownMenuContent>
-            <DropdownMenuLabel>Account Data</DropdownMenuLabel>
+            <DropdownMenuLabel>アカウントデータ</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {user ? (
               <>
-                <DropdownMenuItem>Username: {user.username}</DropdownMenuItem>
-                <DropdownMenuItem>Student Number: {user.password}</DropdownMenuItem>
+                <DropdownMenuItem>名前: {user.username}</DropdownMenuItem>
+                <DropdownMenuItem>学籍番号: {user.password}</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  ログアウト
+                </DropdownMenuItem>
               </>
             ) : (
               <DropdownMenuItem>No user data available</DropdownMenuItem>
