@@ -78,7 +78,7 @@ const RentDialog: React.FC<{
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/rent/room",
+        "https://keychan-backend.vercel.app/rent/room",
         roomdata,
         {
           headers: {
