@@ -136,7 +136,7 @@ const LoginPage: React.FC = () => {
     e.preventDefault(); // フォームのデフォルトの送信動作を防止
     try {
       const response = await axios.post(
-        "https://keychan-backend.vercel.app/login",
+        "keychanbackend-production.up.railway.app/login",
         { username, password },
         {
           headers: {
@@ -169,7 +169,7 @@ const LoginPage: React.FC = () => {
     setButtonLabel("読み込み中...");
     try {
       const response = await axios.get(
-        "https://keychan-backend.vercel.app/api/callpy",
+        "keychanbackend-production.up.railway.app/api/callpy",
         {
           headers: {
             "Content-Type": "application/json",
