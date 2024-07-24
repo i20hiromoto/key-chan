@@ -53,7 +53,7 @@ const Select: React.FC = () => {
   const back = async () => {
     try {
       const response = await axios.post(
-        "https://keychan-backend.vercel.app/room",
+        "https://keychanbackend-production.up.railway.app/api/back/room",
         { student: sessionStorage.getItem("user") },
         {
           headers: {
@@ -70,7 +70,7 @@ const Select: React.FC = () => {
   const fetchData = async (): Promise<DataItem[]> => {
     try {
       const response = await axios.get<DataItem[]>(
-        "https://keychan-backend.vercel.app/api/get/all"
+        "https://keychanbackend-production.up.railway.app/api/get/all"
       );
       return response.data;
     } catch (error) {
